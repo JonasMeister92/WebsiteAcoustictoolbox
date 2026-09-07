@@ -12,6 +12,8 @@ python -m venv .venv
 
 Serve the static website separately on port 8000. The frontend automatically uses `http://127.0.0.1:8001` locally.
 
+The analyzer calls `POST /api/sqm/analyze` once per metric in this order: loudness, sharpness, roughness and tonality. The first response returns an `analysisId`; subsequent steps send it back so the complete sequence consumes one daily file allowance. Each metric has its own processing timeout, and a failed metric does not discard results from completed steps.
+
 ## Required production configuration
 
 ```text
@@ -38,4 +40,4 @@ Run only one container instance while SQLite stores quotas. Move quota state to 
 - Generic public errors with server-side correlation IDs
 - No-store API responses and restrictive browser security headers
 - No persistent audio storage
-- Production startup fails with the development secret
+- Production startup fails when the visitor secret is missing or shorter than 32 characters
