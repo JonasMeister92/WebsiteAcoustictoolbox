@@ -22,7 +22,7 @@ from starlette.middleware.trustedhost import TrustedHostMiddleware
 ROOT = Path(__file__).resolve().parents[1]
 DB_PATH = Path(os.getenv("AT_USAGE_DB", ROOT / "backend" / "usage.sqlite3"))
 ENVIRONMENT = os.getenv("AT_ENV", "development").lower()
-VISITOR_SECRET = os.getenv("AT_VISITOR_SECRET", "development-only-change-me")
+CONFIGURED_VISITOR_SECRET = os.getenv("AT_VISITOR_SECRET")
 MAX_DURATION_SECONDS = 30
 MAX_FILE_BYTES = 50 * 1024 * 1024
 MAX_SAMPLE_RATE = 192_000
@@ -34,8 +34,9 @@ BURST_IP_CAP = 4
 ANALYSIS_SLOTS = asyncio.Semaphore(2)
 LOGGER = logging.getLogger("acoustictoolbox.sqm")
 
-if ENVIRONMENT == "production" and VISITOR_SECRET == "development-only-change-me":
-    raise RuntimeError("AT_VISITOR_SECRET must be set to a strong random value in production.")
+if ENVIRONMENT == "production" and (not CONFIGURED_VISITOR_SECRET or len(CONFIGURED_VISITOR_SECRET) < 32):
+    raise RuntimeError("AT_VISITOR_SECRET must contain at least 32 random characters in production.")
+VISITOR_SECRET = CONFIGURED_VISITOR_SECRET or uuid.uuid4().hex
 
 
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
