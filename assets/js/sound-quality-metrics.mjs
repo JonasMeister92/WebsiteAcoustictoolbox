@@ -1,5 +1,6 @@
 const q=(selector)=>document.querySelector(selector);
-const API_BASE=location.port==='8000'?`${location.protocol}//${location.hostname}:8001`:'';
+const LOCAL_HOSTS=new Set(['localhost','127.0.0.1','0.0.0.0','::1','[::1]']);
+const API_BASE=LOCAL_HOSTS.has(location.hostname)||location.port==='8000'?'http://127.0.0.1:8001':'';
 const visitorId=localStorage.getItem('atVisitorId')||crypto.randomUUID(); localStorage.setItem('atVisitorId',visitorId);
 let latestResult,activeCurve='loudness',audioContext,activeSources=[];
 const headers={'X-Visitor-ID':visitorId};
