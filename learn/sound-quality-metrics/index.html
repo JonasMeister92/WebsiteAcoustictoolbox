@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Understanding Sound Quality Metrics — Acoustic Toolbox</title>
+  <meta name="description" content="Learn how roughness, sharpness and tonality affect perceived sound through controlled listening comparisons.">
+  <link rel="canonical" href="https://acoustictoolbox.com/learn/sound-quality-metrics/">
+  <link rel="stylesheet" href="/assets/css/styles.css">
+  <script defer src="/assets/js/site.js"></script>
+  <script type="module" src="/assets/js/sqm-learning.mjs"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header"><div class="shell header-inner"><a class="brand" href="/"><span class="brand-mark">AT</span><span>Acoustic Toolbox</span></a><nav><a href="/tools/">Tools</a><a aria-current="page" href="/learn/sound-quality-metrics/">Learn</a><a href="/#about">About</a></nav></div></header>
+  <main id="main" class="shell page-main sqm-page">
+    <nav class="breadcrumbs"><a href="/">Home</a><span>/</span><span>Learn</span><span>/</span><span>Sound Quality Metrics</span></nav>
+    <header class="page-heading compact"><p class="eyebrow">Listening guide</p><h1>Understanding Sound Quality Metrics</h1><p class="lede">Hear how roughness, sharpness and tonality change a sound, using controlled comparisons at similar listening levels.</p></header>
+    <section class="sqm-learning">
+      <div class="learning-grid">
+        <article class="learning-card"><p class="category-number">01</p><h3>Roughness</h3><p>Fast amplitude fluctuations merge into a coarse or rattling sensation. Perception is strongest around modulation rates near 70 Hz.</p><div class="compare-audio"><button data-example="roughness-low">▶ Low</button><button data-example="roughness-high">▶ High</button></div><dl><div><dt>Held constant</dt><dd>Carrier, RMS level, duration</dd></div><div><dt>Changed</dt><dd>70 Hz modulation depth</dd></div></dl></article>
+        <article class="learning-card"><p class="category-number">02</p><h3>Sharpness</h3><p>Sounds dominated by high-frequency energy are perceived as sharper. The metric weights specific loudness toward high Bark bands.</p><div class="compare-audio"><button data-example="sharpness-low">▶ Low</button><button data-example="sharpness-high">▶ High</button></div><dl><div><dt>Held constant</dt><dd>RMS level, duration, noise character</dd></div><div><dt>Changed</dt><dd>Spectral centre of gravity</dd></div></dl></article>
+        <article class="learning-card"><p class="category-number">03</p><h3>Tonality</h3><p>Tonality describes how strongly discrete pitches stand out from surrounding broadband sound.</p><div class="compare-audio"><button data-example="tonality-low">▶ Low</button><button data-example="tonality-high">▶ High</button></div><dl><div><dt>Held constant</dt><dd>RMS level, spectrum range, duration</dd></div><div><dt>Changed</dt><dd>1 kHz tone-to-noise ratio</dd></div></dl></article>
+      </div>
+      <p class="learning-note">Perfect isolation is not physically possible: psychoacoustic metrics interact. These synthetic comparisons minimize secondary changes but do not claim that every other metric is numerically identical.</p>
+      <p><a class="button" href="/tools/sound-quality-metrics/">Open the SQM Analyzer <span>→</span></a></p>
+    </section>
+  </main>
+  <footer class="site-footer"><div class="shell copyright">© <span data-year>2026</span> Acoustic Toolbox</div></footer>
+</body>
+</html>
