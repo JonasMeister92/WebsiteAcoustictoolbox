@@ -1,0 +1,5 @@
+.git
+.venv
+backend/__pycache__
+backend/usage.sqlite3*
+*.pyc
