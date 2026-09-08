@@ -1,0 +1,16 @@
+.compare-audio button small {
+  display: block;
+  margin-top: 3px;
+  color: inherit;
+  font: 10px/1.35 var(--mono);
+}
+
+.roughness-comparison {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+@media (max-width: 540px) {
+  .roughness-comparison {
+    grid-template-columns: 1fr;
+  }
+}

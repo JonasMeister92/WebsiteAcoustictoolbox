@@ -7,8 +7,9 @@
   <meta name="description" content="Learn how roughness, sharpness and tonality affect perceived sound through controlled listening comparisons.">
   <link rel="canonical" href="https://acoustictoolbox.com/learn/sound-quality-metrics/">
   <link rel="stylesheet" href="/assets/css/styles.css">
+  <link rel="stylesheet" href="/assets/css/sqm-learning.css">
   <script defer src="/assets/js/site.js"></script>
-  <script type="module" src="/assets/js/sqm-learning.mjs"></script>
+  <script type="module" src="/assets/js/sqm-learning.mjs?v=2"></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -18,11 +19,11 @@
     <header class="page-heading compact"><p class="eyebrow">Listening guide</p><h1>Understanding Sound Quality Metrics</h1><p class="lede">Hear how roughness, sharpness and tonality change a sound, using controlled comparisons at similar listening levels.</p></header>
     <section class="sqm-learning">
       <div class="learning-grid">
-        <article class="learning-card"><p class="category-number">01</p><h3>Roughness</h3><p>Fast amplitude fluctuations merge into a coarse or rattling sensation. Perception is strongest around modulation rates near 70 Hz.</p><div class="compare-audio"><button data-example="roughness-low">▶ Low</button><button data-example="roughness-high">▶ High</button></div><dl><div><dt>Held constant</dt><dd>Carrier, RMS level, duration</dd></div><div><dt>Changed</dt><dd>70 Hz modulation depth</dd></div></dl></article>
-        <article class="learning-card"><p class="category-number">02</p><h3>Sharpness</h3><p>Sounds dominated by high-frequency energy are perceived as sharper. The metric weights specific loudness toward high Bark bands.</p><div class="compare-audio"><button data-example="sharpness-low">▶ Low</button><button data-example="sharpness-high">▶ High</button></div><dl><div><dt>Held constant</dt><dd>RMS level, duration, noise character</dd></div><div><dt>Changed</dt><dd>Spectral centre of gravity</dd></div></dl></article>
-        <article class="learning-card"><p class="category-number">03</p><h3>Tonality</h3><p>Tonality describes how strongly discrete pitches stand out from surrounding broadband sound.</p><div class="compare-audio"><button data-example="tonality-low">▶ Low</button><button data-example="tonality-high">▶ High</button></div><dl><div><dt>Held constant</dt><dd>RMS level, spectrum range, duration</dd></div><div><dt>Changed</dt><dd>1 kHz tone-to-noise ratio</dd></div></dl></article>
+        <article class="learning-card"><p class="category-number">01</p><h3>Roughness</h3><p>Fast amplitude fluctuations merge into a coarse or rattling sensation. Perception is strongest around modulation rates near 70 Hz.</p><div class="compare-audio roughness-comparison"><button data-example="roughness-low">▶ Low tone<small>≈ 0.004 asper</small></button><button data-example="roughness-high">▶ Rough tone<small>≈ 0.87 asper</small></button><button data-example="roughness-noise-matched">▶ Matched noise<small>≈ 0.87 asper</small></button></div><dl><div><dt>Held constant</dt><dd>RMS level, duration and 70 Hz modulation rate</dd></div><div><dt>Changed</dt><dd>Modulation depth; the matched example also exchanges the 1 kHz carrier for broadband noise</dd></div></dl></article>
+        <article class="learning-card"><p class="category-number">02</p><h3>Sharpness</h3><p>Sounds dominated by high-frequency energy are perceived as sharper. The metric weights specific loudness toward high Bark bands.</p><div class="compare-audio"><button data-example="sharpness-low">▶ Low<small>≈ 1.46 acum</small></button><button data-example="sharpness-high">▶ High<small>≈ 4.23 acum</small></button></div><dl><div><dt>Held constant</dt><dd>RMS level, duration, noise character</dd></div><div><dt>Changed</dt><dd>Spectral centre of gravity</dd></div></dl></article>
+        <article class="learning-card"><p class="category-number">03</p><h3>Tonality</h3><p>Tonality describes how strongly discrete pitches stand out from surrounding broadband sound.</p><div class="compare-audio"><button data-example="tonality-low">▶ Low<small>≈ 0 dB PR</small></button><button data-example="tonality-high">▶ High<small>≈ 27.7 dB PR</small></button></div><dl><div><dt>Held constant</dt><dd>RMS level, spectrum range, duration</dd></div><div><dt>Changed</dt><dd>1 kHz tone-to-noise ratio</dd></div></dl></article>
       </div>
-      <p class="learning-note">Perfect isolation is not physically possible: psychoacoustic metrics interact. These synthetic comparisons minimize secondary changes but do not claim that every other metric is numerically identical.</p>
+      <p class="learning-note">Reference values were calculated with MoSQITo from level-matched 70 dB SPL, 48 kHz excerpts. Playback level depends on your device, so the values describe the digital reference signals rather than the sound pressure at your ears. Roughness uses Daniel–Weber, sharpness DIN 45692 and tonality the ECMA-418-1 prominence ratio. Perfect isolation is not physically possible because psychoacoustic metrics interact.</p>
       <p><a class="button" href="/tools/sound-quality-metrics/">Open the SQM Analyzer <span>→</span></a></p>
     </section>
   </main>
