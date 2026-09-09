@@ -1,0 +1,9 @@
+.advanced-section-title { margin-top: 30px!important; padding-top: 25px; border-top: 1px solid var(--line); }
+.advanced-output-grid { grid-template-columns: repeat(3,1fr); }
+.advanced-summary { grid-template-columns: repeat(5,1fr); }
+.advanced-plots { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--line); }
+.advanced-plots .generator-chart-section + .generator-chart-section { border-top: 0; border-left: 1px solid var(--line); }
+.advanced-signal-line { fill: none; stroke: var(--accent); stroke-width: 2; vector-effect: non-scaling-stroke; }
+.advanced-envelope-line { fill: none; stroke: #a35b37; stroke-width: 3; vector-effect: non-scaling-stroke; }
+@media(max-width:900px){.advanced-summary{grid-template-columns:1fr 1fr}.advanced-summary>div:nth-child(odd){border-left:0}.advanced-summary>div:nth-child(n+3){border-top:1px solid var(--line)}.advanced-plots{grid-template-columns:1fr}.advanced-plots .generator-chart-section + .generator-chart-section{border-top:1px solid var(--line);border-left:0}}
+@media(max-width:540px){.advanced-output-grid,.advanced-summary{grid-template-columns:1fr}.advanced-summary>div+div{border-left:0;border-top:1px solid var(--line)}}

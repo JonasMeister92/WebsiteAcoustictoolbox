@@ -10,6 +10,7 @@ import {
   propagateBand, energeticSum
 } from '../assets/js/outdoor-propagation.mjs';
 import { frequencyToPeriod, periodToFrequency, fftResolution, aliasFrequency, nextPowerOfTwo, realSpectrum } from '../assets/js/signal-processing.mjs';
+import { applyAmplitudeModulation, encodeFloat32Wav, generateSound, levelFromPressure, pressureFromLevel } from '../assets/js/sound-generator-core.mjs';
 
 const closeTo = (actual, expected, tolerance = 1e-4) => assert.ok(Math.abs(actual - expected) < tolerance, `${actual} is not close to ${expected}`);
 
@@ -75,3 +76,9 @@ test('calculates FFT resolution', () => closeTo(fftResolution(48000, 4800), 10))
 test('folds frequencies around Nyquist', () => closeTo(aliasFrequency(10000, 16000), 6000));
 test('finds next FFT power of two', () => assert.equal(nextPowerOfTwo(4800), 8192));
 test('FFT locates an exact-bin sinusoid', () => { const sampleRate=1024,size=1024,samples=Float64Array.from({length:size},(_,i)=>Math.sin(2*Math.PI*64*i/sampleRate)); const spectrum=realSpectrum(samples,sampleRate,'rectangular'); const peak=spectrum.reduce((a,b)=>b.amplitude>a.amplitude?b:a); closeTo(peak.frequency,64); closeTo(peak.amplitude,1,1e-8); });
+test('sound level and RMS pressure convert reversibly', () => closeTo(levelFromPressure(pressureFromLevel(94)),94));
+test('sound generator applies the requested RMS pressure and click-free fade', () => { const signal=generateSound({type:'sine',frequency:1000,duration:.1,sampleRate:48000,rmsPressurePa:1,fadeMs:5}); const rms=Math.sqrt(signal.samples.reduce((sum,value)=>sum+value*value,0)/signal.samples.length); closeTo(rms,1,1e-6);assert.equal(Math.abs(signal.samples[0]),0);assert.equal(Math.abs(signal.samples.at(-1)),0); });
+test('noise generation is repeatable', () => { const options={type:'pink',duration:.05,sampleRate:8000,rmsPressurePa:.1}; assert.deepEqual(generateSound(options).samples,generateSound(options).samples); });
+test('32-bit float WAV has the expected format and size', () => { const samples=new Float32Array([-.5,0,.5]),wav=encodeFloat32Wav(samples,48000),view=new DataView(wav); assert.equal(wav.byteLength,56);assert.equal(view.getUint16(20,true),3);assert.equal(view.getUint16(34,true),32);assert.equal(view.getFloat32(52,true),.5); });
+test('amplitude modulation preserves requested RMS and reports its envelope', () => { const carrier=generateSound({type:'sine',frequency:1000,duration:.1,sampleRate:48000,rmsPressurePa:1,fadeMs:0});const modulated=applyAmplitudeModulation(carrier.samples,{sampleRate:48000,frequency:100,depthPercent:80,rmsPressurePa:.5,fadeMs:0});const rms=Math.sqrt(modulated.samples.reduce((sum,value)=>sum+value*value,0)/modulated.samples.length);closeTo(rms,.5,1e-6);closeTo(modulated.envelopeMin,.2,1e-6);closeTo(modulated.envelopeMax,1.8,1e-6);assert.equal(modulated.overmodulated,false); });
+test('amplitude modulation identifies overmodulation', () => { const carrier=new Float32Array(800).fill(1);const modulated=applyAmplitudeModulation(carrier,{sampleRate:8000,frequency:10,depthPercent:150,rmsPressurePa:1,fadeMs:0});assert.equal(modulated.overmodulated,true);assert.ok(modulated.envelopeMin<0); });

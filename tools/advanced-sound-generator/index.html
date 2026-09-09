@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Advanced Sound Generator — Amplitude Modulation</title>
+  <meta name="description" content="Create amplitude-modulated tones and coloured noise with adjustable waveform, rate, depth and phase.">
+  <link rel="canonical" href="https://acoustictoolbox.com/tools/advanced-sound-generator/">
+  <link rel="stylesheet" href="/assets/css/styles.css?v=2">
+  <link rel="stylesheet" href="/assets/css/sound-generator.css?v=3">
+  <link rel="stylesheet" href="/assets/css/advanced-sound-generator.css">
+  <script defer src="/assets/js/site.js"></script>
+  <script type="module" src="/assets/js/advanced-sound-generator.mjs?v=2"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header"><div class="shell header-inner"><a class="brand" href="/"><span class="brand-mark">AT</span><span>Acoustic Toolbox</span></a><nav><a aria-current="page" href="/tools/">Tools</a><a href="/#learn">Learn</a><a href="/#about">About</a></nav></div></header>
+  <main id="main" class="shell page-main signal-page">
+    <nav class="breadcrumbs"><a href="/">Home</a><span>/</span><a href="/tools/">Tools</a><span>/</span><span>Advanced Sound Generator</span></nav>
+    <header class="page-heading compact"><p class="eyebrow">Create Sounds</p><h1>Advanced Sound Generator</h1><p class="lede">Apply a configurable amplitude modulation to tones or coloured noise and inspect the resulting waveform and envelope.</p></header>
+    <section class="signal-tool generator-tool">
+      <div class="signal-controls">
+        <h2>Carrier</h2>
+        <div class="generator-grid advanced-grid">
+          <label class="field"><span>Carrier signal</span><span class="input-unit"><select data-carrier><optgroup label="Periodic waveforms"><option value="sine">Sine</option><option value="square">Square</option><option value="triangle">Triangle</option><option value="sawtooth">Sawtooth</option></optgroup><optgroup label="Noise"><option value="white">White noise</option><option value="pink">Pink noise</option><option value="brown">Brown / red noise</option><option value="blue">Blue noise</option><option value="violet">Violet noise</option></optgroup></select></span></label>
+          <label class="field" data-carrier-frequency-field><span>Carrier frequency</span><span class="input-unit"><input type="number" min="1" step="any" value="1000" data-carrier-frequency><span>Hz</span></span></label>
+          <label class="field"><span>Duration</span><span class="input-unit"><input type="number" min="0.05" max="30" step="0.05" value="2" data-duration><span>s</span></span></label>
+          <label class="field"><span>Sample rate</span><span class="input-unit"><select data-sample-rate><option value="44100">44.1 kHz</option><option value="48000" selected>48 kHz</option><option value="96000">96 kHz</option><option value="192000">192 kHz</option></select></span></label>
+        </div>
+        <h2 class="advanced-section-title">Amplitude modulation</h2>
+        <div class="generator-grid advanced-grid">
+          <label class="field"><span>Modulation waveform</span><span class="input-unit"><select data-modulation-waveform><option value="sine">Sine</option><option value="square">Square</option><option value="triangle">Triangle</option><option value="sawtooth">Sawtooth</option></select></span></label>
+          <label class="field"><span>Modulation frequency</span><span class="input-unit"><input type="number" min="0.01" step="any" value="70" data-modulation-frequency><span>Hz</span></span></label>
+          <label class="field"><span>Modulation depth</span><span class="input-unit"><input type="number" min="0" max="200" step="1" value="80" data-depth><span>%</span></span></label>
+          <label class="field"><span>Modulation phase</span><span class="input-unit"><input type="number" step="1" value="0" data-modulation-phase><span>°</span></span></label>
+        </div>
+        <div class="preset-row"><button type="button" class="secondary-button" data-am-preset="4,70,sine">Fluctuation · 4 Hz</button><button type="button" class="secondary-button" data-am-preset="8,60,sine">Tremolo · 8 Hz</button><button type="button" class="secondary-button" data-am-preset="70,80,sine">Roughness · 70 Hz</button><button type="button" class="secondary-button" data-am-preset="2,100,square">Gated · 2 Hz</button></div>
+        <h2 class="advanced-section-title">Output</h2>
+        <div class="generator-grid advanced-output-grid">
+          <label class="field"><span>Level input</span><span class="input-unit"><select data-level-mode><option value="spl">Sound pressure level</option><option value="pa">RMS pressure</option></select></span></label>
+          <label class="field"><span data-level-label>Sound pressure level</span><span class="input-unit"><input type="number" min="-20" max="180" step="0.1" value="94" data-level-value><span data-level-unit>dB SPL</span></span></label>
+          <label class="field"><span>Fade in / out</span><span class="input-unit"><input type="number" min="0" max="1000" step="1" value="10" data-fade><span>ms</span></span></label>
+        </div>
+        <div class="tone-buttons"><button class="button audio-button" type="button" data-preview>▶ Preview</button><button class="secondary-button" type="button" data-download>Download 32-bit-float WAV</button></div>
+        <p class="generator-warning">The complete modulated signal is normalized to the requested RMS pressure. Preview playback is separately peak-normalized and is not acoustically calibrated.</p><p class="error" data-advanced-error></p>
+      </div>
+      <div class="signal-summary advanced-summary"><div><span>Equivalent level</span><strong data-result-level>—</strong></div><div><span>RMS pressure</span><strong data-result-rms>—</strong></div><div><span>Peak pressure</span><strong data-result-peak>—</strong></div><div><span>Envelope min … max</span><strong data-result-envelope>—</strong></div><div><span>Overmodulation</span><strong data-result-overmodulation>—</strong></div></div>
+      <div class="advanced-plots"><section class="generator-chart-section"><h2>Modulated signal</h2><p data-sidebands></p><svg viewBox="0 0 1000 345" role="img" aria-label="Time-domain amplitude-modulated signal" data-modulated-chart></svg></section><section class="generator-chart-section"><h2>Modulation envelope</h2><p>A(t) = 1 + m · g(2πf<sub>m</sub>t + φ)</p><svg viewBox="0 0 1000 345" role="img" aria-label="Amplitude modulation envelope" data-envelope-chart></svg></section></div>
+    </section>
+    <article class="article-content"><section><h2>Amplitude modulation</h2><div class="worked-formula"><code>x(t) = A · c(t) · [1 + m · g(2πfₘt + φ)]</code></div><p>The carrier c(t) may be periodic or noise. The modulator g ranges from −1 to +1, and m is the modulation depth. At 100% the envelope reaches zero. Above 100% it becomes negative for part of the cycle, producing overmodulation and phase inversion.</p></section><aside class="rule-box"><h2>Useful extensions for later</h2><dl><div><dt>Frequency modulation</dt><dd>Adjustable deviation and modulation waveform.</dd></div><div><dt>Sweeps and chirps</dt><dd>Linear, logarithmic and stepped frequency trajectories.</dd></div><div><dt>Multi-tone synthesis</dt><dd>Independent frequencies, phases and amplitudes.</dd></div><div><dt>Burst sequences</dt><dd>Defined on/off times and repeated acoustic pulses.</dd></div></dl></aside></article>
+  </main>
+  <footer class="site-footer"><div class="shell copyright">© <span data-year>2026</span> Acoustic Toolbox</div></footer>
+</body>
+</html>

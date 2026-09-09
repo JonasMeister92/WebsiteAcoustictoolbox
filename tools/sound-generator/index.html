@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Sound Generator — Tones and Noise</title>
+  <meta name="description" content="Create tones and coloured noise at a defined sound pressure, preview them and download mono 32-bit-float WAV files.">
+  <link rel="canonical" href="https://acoustictoolbox.com/tools/sound-generator/">
+  <link rel="stylesheet" href="/assets/css/styles.css?v=2">
+  <link rel="stylesheet" href="/assets/css/sound-generator.css?v=3">
+  <script defer src="/assets/js/site.js"></script>
+  <script type="module" src="/assets/js/sound-generator.mjs?v=3"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header"><div class="shell header-inner"><a class="brand" href="/"><span class="brand-mark">AT</span><span>Acoustic Toolbox</span></a><nav><a aria-current="page" href="/tools/">Tools</a><a href="/#learn">Learn</a><a href="/#about">About</a></nav></div></header>
+  <main id="main" class="shell page-main signal-page">
+    <nav class="breadcrumbs"><a href="/">Home</a><span>/</span><a href="/tools/">Tools</a><span>/</span><span>Sound Generator</span></nav>
+    <header class="page-heading compact"><p class="eyebrow">Create Sounds</p><h1>Sound Generator</h1><p class="lede">Create calibrated pressure waveforms and coloured noise, listen safely in the browser and export the samples as mono 32-bit-float WAV.</p></header>
+    <section class="signal-tool generator-tool">
+      <div class="signal-controls">
+        <h2>Signal definition</h2>
+        <div class="generator-grid">
+          <label class="field"><span>Signal</span><span class="input-unit"><select data-signal-type><optgroup label="Periodic waveforms"><option value="sine">Sine</option><option value="square">Square</option><option value="triangle">Triangle</option><option value="sawtooth">Sawtooth</option></optgroup><optgroup label="Noise"><option value="white">White noise</option><option value="pink">Pink noise</option><option value="brown">Brown / red noise</option><option value="blue">Blue noise</option><option value="violet">Violet noise</option></optgroup></select></span></label>
+          <label class="field" data-frequency-field><span>Frequency</span><span class="input-unit"><input type="number" min="1" step="any" value="1000" data-frequency><span>Hz</span></span></label>
+          <label class="field"><span>Duration</span><span class="input-unit"><input type="number" min="0.05" max="30" step="0.05" value="2" data-duration><span>s</span></span></label>
+          <label class="field"><span>Sample rate</span><span class="input-unit"><select data-sample-rate><option value="44100">44.1 kHz</option><option value="48000" selected>48 kHz</option><option value="96000">96 kHz</option><option value="192000">192 kHz</option></select></span></label>
+          <label class="field"><span>Level input</span><span class="input-unit"><select data-level-mode><option value="spl">Sound pressure level</option><option value="pa">RMS pressure</option></select></span></label>
+          <label class="field"><span data-level-label>Sound pressure level</span><span class="input-unit"><input type="number" min="-20" max="180" step="0.1" value="94" data-level-value><span data-level-unit>dB SPL</span></span></label>
+          <label class="field" data-phase-field><span>Start phase</span><span class="input-unit"><input type="number" step="1" value="0" data-phase><span>°</span></span></label>
+          <label class="field"><span>Fade in / out</span><span class="input-unit"><input type="number" min="0" max="1000" step="1" value="10" data-fade><span>ms</span></span></label>
+        </div>
+        <div class="tone-buttons"><button class="button audio-button" type="button" data-preview>▶ Preview</button><button class="secondary-button" type="button" data-download>Download 32-bit-float WAV</button></div>
+        <p class="generator-warning">Preview audio is peak-normalized to a conservative listening level. It is not an acoustically calibrated reproduction of the entered dB SPL or Pa value.</p>
+        <p class="error" data-generator-error></p>
+      </div>
+      <div class="signal-summary generator-summary"><div><span>Equivalent level</span><strong data-result-level>—</strong></div><div><span>RMS pressure</span><strong data-result-rms>—</strong></div><div><span>Peak pressure</span><strong data-result-peak>—</strong></div><div><span>Crest factor</span><strong data-result-crest>—</strong></div><div><span>Samples / file</span><strong data-result-size>—</strong></div></div>
+      <div class="generator-visuals">
+        <section class="generator-chart-section"><h2>Generated waveform</h2><p data-waveform-caption></p><svg viewBox="0 0 1000 345" role="img" aria-label="Time-domain waveform of the generated signal" data-waveform-chart></svg></section>
+        <section class="generator-chart-section noise-spectrum-section"><h2>Noise colours</h2><p>Idealized one-sided power spectral density, normalized to 0 dB at 1 kHz.</p><svg viewBox="0 0 1000 350" role="img" aria-label="Comparison of the spectral slopes of five noise colours" data-noise-chart></svg><div class="noise-legend"><span><i class="noise-white"></i>White</span><span><i class="noise-pink"></i>Pink</span><span><i class="noise-brown"></i>Brown</span><span><i class="noise-blue"></i>Blue</span><span><i class="noise-violet"></i>Violet</span></div></section>
+      </div>
+      <section class="noise-math"><div><p class="eyebrow">Mathematical definition</p><h2>S(f) ∝ f<sup>α</sup></h2><p>The exponent α describes the slope of the power spectral density S(f). A doubling of frequency changes the spectral level by approximately 3.01 α dB per octave.</p></div><dl><div><dt>White</dt><dd>α = 0 · 0 dB/oct</dd></div><div><dt>Pink</dt><dd>α = −1 · −3.01 dB/oct</dd></div><div><dt>Brown / red</dt><dd>α = −2 · −6.02 dB/oct</dd></div><div><dt>Blue</dt><dd>α = +1 · +3.01 dB/oct</dd></div><div><dt>Violet</dt><dd>α = +2 · +6.02 dB/oct</dd></div></dl></section>
+    </section>
+    <article class="article-content"><section><h2>What the WAV contains</h2><p>The downloaded mono IEEE-float WAV stores the generated instantaneous sound pressure directly in pascals. This is useful for numerical workflows, simulation and calibrated processing. Ordinary media players interpret floating-point samples as normalized audio and can clip pressure values outside ±1, so use the normalized browser preview for listening.</p></section><section><h2>Signal characteristics</h2><p>Square, triangle and sawtooth waveforms are synthesized from harmonics below Nyquist to reduce aliasing. Noise generation uses a repeatable seed: white noise has constant power per hertz, pink noise approximately per octave, brown noise emphasizes low frequencies, while blue and violet noise increasingly emphasize high frequencies. A short cosine fade prevents clicks while preserving the requested overall RMS pressure.</p></section></article>
+  </main>
+  <footer class="site-footer"><div class="shell copyright">© <span data-year>2026</span> Acoustic Toolbox</div></footer>
+</body>
+</html>
