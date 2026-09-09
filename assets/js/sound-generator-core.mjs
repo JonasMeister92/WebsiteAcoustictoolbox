@@ -85,6 +85,21 @@ function modulationValue(type,phase){
   throw new RangeError('Unknown modulation waveform.');
 }
 
+function waveformValue(type,phase){
+  return modulationValue(type,phase);
+}
+
+function normalizeAdvanced(signal,sampleRate,rmsPressurePa,fadeMs=10){
+  if(!(rmsPressurePa>0&&Number.isFinite(rmsPressurePa)))throw new RangeError('RMS pressure must be greater than zero.');
+  const fadeSamples=Math.min(Math.round(fadeMs*sampleRate/1000),Math.floor(signal.length/2));
+  for(let i=0;i<fadeSamples;i++){const gain=fadeSamples===1?0:.5-.5*Math.cos(Math.PI*i/(fadeSamples-1));signal[i]*=gain;signal[signal.length-1-i]*=gain;}
+  let energy=0;for(const value of signal)energy+=value*value;
+  const rawRms=Math.sqrt(energy/signal.length);if(!rawRms)throw new RangeError('The generated signal is silent.');
+  const scale=rmsPressurePa/rawRms;let peak=0;
+  for(let i=0;i<signal.length;i++){signal[i]*=scale;peak=Math.max(peak,Math.abs(signal[i]));}
+  return {samples:Float32Array.from(signal),sampleRate,rmsPressurePa,peakPressurePa:peak,crestFactorDb:20*Math.log10(peak/rmsPressurePa)};
+}
+
 export function applyAmplitudeModulation(samples,{sampleRate,frequency=70,depthPercent=50,waveform='sine',phaseDegrees=0,fadeMs=10,rmsPressurePa=1}={}){
   if(!(sampleRate>=8000&&sampleRate<=192000))throw new RangeError('Sample rate must be between 8 and 192 kHz.');
   if(!(frequency>0&&frequency<sampleRate/2))throw new RangeError('Modulation frequency must be between 0 Hz and Nyquist.');
@@ -98,6 +113,46 @@ export function applyAmplitudeModulation(samples,{sampleRate,frequency=70,depthP
   let energy=0;for(const value of output)energy+=value*value;const rawRms=Math.sqrt(energy/output.length);if(!rawRms)throw new RangeError('The modulated signal is silent.');
   const scale=rmsPressurePa/rawRms;let peak=0;for(let i=0;i<output.length;i++){output[i]*=scale;peak=Math.max(peak,Math.abs(output[i]));}
   return {samples:Float32Array.from(output),sampleRate,rmsPressurePa,peakPressurePa:peak,crestFactorDb:20*Math.log10(peak/rmsPressurePa),envelopeMin,envelopeMax,overmodulated:envelopeMin<0};
+}
+
+export function generateFrequencyModulation({carrierFrequency=1000,modulationFrequency=5,deviationHz=100,carrierWaveform='sine',modulationWaveform='sine',duration=2,sampleRate=48000,modulationPhaseDegrees=0,fadeMs=10,rmsPressurePa=1}={}){
+  if(!(sampleRate>=8000&&sampleRate<=192000))throw new RangeError('Sample rate must be between 8 and 192 kHz.');
+  if(!(duration>=.05&&duration<=30))throw new RangeError('Duration must be between 0.05 and 30 seconds.');
+  if(!(modulationFrequency>0&&deviationHz>=0&&carrierFrequency-deviationHz>0&&carrierFrequency+deviationHz<sampleRate/2))throw new RangeError('The instantaneous frequency must stay between 0 Hz and Nyquist.');
+  const length=Math.round(duration*sampleRate),signal=new Float64Array(length),phaseOffset=modulationPhaseDegrees*Math.PI/180;
+  let carrierPhase=0;
+  for(let i=0;i<length;i++){const instant=carrierFrequency+deviationHz*modulationValue(modulationWaveform,2*Math.PI*modulationFrequency*i/sampleRate+phaseOffset);carrierPhase+=2*Math.PI*instant/sampleRate;signal[i]=waveformValue(carrierWaveform,carrierPhase);}
+  return {...normalizeAdvanced(signal,sampleRate,rmsPressurePa,fadeMs),minFrequency:carrierFrequency-deviationHz,maxFrequency:carrierFrequency+deviationHz,modulationIndex:deviationHz/modulationFrequency};
+}
+
+export function generateSweep({startFrequency=20,endFrequency=20000,law='logarithmic',duration=5,sampleRate=48000,fadeMs=10,rmsPressurePa=1}={}){
+  if(!(sampleRate>=8000&&sampleRate<=192000))throw new RangeError('Sample rate must be between 8 and 192 kHz.');
+  if(!(duration>=.05&&duration<=30))throw new RangeError('Duration must be between 0.05 and 30 seconds.');
+  if(!(startFrequency>0&&endFrequency>0&&startFrequency<sampleRate/2&&endFrequency<sampleRate/2))throw new RangeError('Sweep frequencies must be between 0 Hz and Nyquist.');
+  if(!['linear','logarithmic'].includes(law))throw new RangeError('Unknown sweep law.');
+  const length=Math.round(duration*sampleRate),signal=new Float64Array(length),ratio=endFrequency/startFrequency;
+  for(let i=0;i<length;i++){const t=i/sampleRate,phase=law==='linear'?2*Math.PI*(startFrequency*t+(endFrequency-startFrequency)*t*t/(2*duration)):Math.abs(Math.log(ratio))<1e-12?2*Math.PI*startFrequency*t:2*Math.PI*startFrequency*duration/Math.log(ratio)*(ratio**(t/duration)-1);signal[i]=Math.sin(phase);}
+  return {...normalizeAdvanced(signal,sampleRate,rmsPressurePa,fadeMs),startFrequency,endFrequency,law};
+}
+
+export function generateMultiTone({tones=[],duration=2,sampleRate=48000,fadeMs=10,rmsPressurePa=1}={}){
+  if(!(sampleRate>=8000&&sampleRate<=192000))throw new RangeError('Sample rate must be between 8 and 192 kHz.');
+  if(!(duration>=.05&&duration<=30))throw new RangeError('Duration must be between 0.05 and 30 seconds.');
+  const active=tones.filter(tone=>tone.enabled!==false);
+  if(!active.length)throw new RangeError('Enable at least one tone.');
+  for(const tone of active)if(!(tone.frequency>0&&tone.frequency<sampleRate/2))throw new RangeError('Every tone must be between 0 Hz and Nyquist.');
+  const signal=new Float64Array(Math.round(duration*sampleRate));
+  for(const tone of active){const gain=10**((Number(tone.levelDb)||0)/20),phase=(Number(tone.phaseDegrees)||0)*Math.PI/180;for(let i=0;i<signal.length;i++)signal[i]+=gain*Math.sin(2*Math.PI*tone.frequency*i/sampleRate+phase);}
+  return {...normalizeAdvanced(signal,sampleRate,rmsPressurePa,fadeMs),toneCount:active.length};
+}
+
+export function generateBurstSequence({type='sine',frequency=1000,onSeconds=.2,offSeconds=.2,repetitions=5,rampMs=5,sampleRate=48000,rmsPressurePa=1,seed=509}={}){
+  if(!(onSeconds>.001&&offSeconds>=0&&repetitions>=1&&repetitions<=100))throw new RangeError('Choose valid on/off times and 1 to 100 repetitions.');
+  const duration=(onSeconds+offSeconds)*Math.floor(repetitions);
+  if(duration>30)throw new RangeError('The burst sequence may be at most 30 seconds long.');
+  const base=generateSound({type,frequency,duration,sampleRate,fadeMs:0,rmsPressurePa:1,seed}),signal=Float64Array.from(base.samples),periodSamples=Math.round((onSeconds+offSeconds)*sampleRate),onSamples=Math.round(onSeconds*sampleRate),rampSamples=Math.min(Math.round(rampMs*sampleRate/1000),Math.floor(onSamples/2));
+  for(let i=0;i<signal.length;i++){const within=i%periodSamples;if(within>=onSamples){signal[i]=0;continue;}let gain=1;if(rampSamples&&within<rampSamples)gain=.5-.5*Math.cos(Math.PI*within/rampSamples);else if(rampSamples&&within>=onSamples-rampSamples)gain=.5-.5*Math.cos(Math.PI*(onSamples-1-within)/rampSamples);signal[i]*=gain;}
+  return {...normalizeAdvanced(signal,sampleRate,rmsPressurePa,0),dutyCycle:onSeconds/(onSeconds+offSeconds),repetitions:Math.floor(repetitions),duration};
 }
 
 export const isPeriodicSignal=(type)=>PERIODIC_TYPES.has(type);
